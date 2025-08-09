@@ -1,29 +1,39 @@
-import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs';
-import dotenv from 'dotenv';
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
+import dotenv from "dotenv";
+import path from "path";
 
+dotenv.config();
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUD_API_KEY,
-    api_secret: process.env.CLOUD_API_SECRET,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
-    try{
+export const uploadOnCloudinary = async (localFilePath) => {
+    try {
         if (!localFilePath) return null;
-        //upload file on cloudinary
-        const response = await cloudinary.uploader.upload(localFilePath,{
+
+        // Ensure absolute path
+        const resolvedPath = path.resolve(localFilePath);
+
+        const response = await cloudinary.uploader.upload(resolvedPath, {
             resource_type: "auto"
         });
-        //file has been uploaded sucessfully
-        console.log('file is uploaded on cloudinary',response.url);
+
+        // console.log("File uploaded to Cloudinary:", response.secure_url);
+
+        // Delete local file after upload
+        fs.unlinkSync(resolvedPath);
+
         return response;
-    }catch(e){
-        fs.unlinkSync(localFilePath); //removes the locally saved file saved temporary file as the upoad operation got failed
+    } catch (error) {
+        console.error("Cloudinary upload failed:", error);
+        // Remove local file on error
+        if (fs.existsSync(localFilePath)) {
+            fs.unlinkSync(localFilePath);
+        }
         return null;
     }
-
-}
-
-export {uploadOnCloudinary}
+};
