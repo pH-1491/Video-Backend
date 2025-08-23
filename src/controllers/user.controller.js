@@ -166,8 +166,8 @@ const logoutUser = asyncHandler(async (req, res) => {
         await User.findByIdAndUpdate(
             req.user._id,
             {
-                $set: {
-                    refreshToken: undefined,
+                $unset: {
+                    refreshToken: 1, //this removes the field from the document
                 },
             },
             {
@@ -357,7 +357,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
     const {userName} = req.params; //params is url
-    if (!userName?.trim) {
+    if (!userName?.trim()) {
         throw new ApiError(401, "Invalid user name");
     }
 
