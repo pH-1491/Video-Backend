@@ -29,18 +29,44 @@ const createPlaylist = asyncHandler(async (req, res) => {
 })
 
 
+
 const getUserPlaylists = asyncHandler(async (req, res) => {
     const {userId} = req.params
     //TODO: get user playlists
+    if (!userId){
+        throw new ApiError(400,'UserId is required')
+    }
 
+    const totalPlaylist = await Playlist.countDocuments({owner: userId});
 
-
+    return res
+    .status(201)
+    .json(new ApiResponse(201,totalPlaylist,"successfully found total playlist."))
 })
+
+
 
 const getPlaylistById = asyncHandler(async (req, res) => {
     const {playlistId} = req.params
     //TODO: get playlist by id
+    if (!playlistId) {
+        throw new ApiError(400, 'PlaylistId is required');
+    }
+
+    const playlist = await Playlist.findById(playlistId)
+        .populate("owner", "username email")  // populate user info
+        .populate("videos");                  //  populate videos
+
+    if (!playlist) {
+        throw new ApiError(404, 'Playlist not found');
+    }
+
+    return res
+        .status(200)
+        .json(new ApiResponse(200, playlist, "Playlist fetched successfully."));
 })
+
+
 
 const addVideoToPlaylist = asyncHandler(async (req, res) => {
     const {playlistId, videoId} = req.params
@@ -73,6 +99,8 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
         )
 
 })
+
+
 
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     const {playlistId, videoId} = req.params
@@ -112,16 +140,58 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     )
 })
 
+
+
 const deletePlaylist = asyncHandler(async (req, res) => {
     const {playlistId} = req.params
     // TODO: delete playlist
+    const playlist = await Playlist.findById(playlistId);
+    if (!playlist) {
+        throw new ApiError(400, 'Playlist not found')
+    }
+
+    await Playlist.findByIdAndDelete(playlistId);
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(201, {},"playlist deleted successfully.")
+    )
 })
+
+
 
 const updatePlaylist = asyncHandler(async (req, res) => {
     const {playlistId} = req.params
     const {name, description} = req.body
     //TODO: update playlist
+    if (!name){
+        throw new ApiError(400, 'Name is required')
+    }
+
+    if (!description){
+        throw new ApiError(400, 'Description is required')
+    }
+
+
+    const playlist = await Playlist.findById(playlistId);
+    if (!playlist) {
+        throw new ApiError(400, 'Playlist not found')
+    }
+
+    playlist.name = name;
+    playlist.description = description;
+    await playlist.save();
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(201,playlist,"playlist updated successfully.")
+    )
+
 })
+
+
 
 export {
     createPlaylist,
