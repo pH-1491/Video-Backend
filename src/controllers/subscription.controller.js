@@ -8,7 +8,6 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 
 const toggleSubscription = asyncHandler(async (req, res) => {
     const {channelId} = req.params
-    // TODO: toggle subscription
     const userId = req.user._id;
     if (!userId) {
         throw new ApiError(403, "User ID is required");
@@ -49,15 +48,56 @@ const toggleSubscription = asyncHandler(async (req, res) => {
 
 })
 
+
+
 // controller to return subscriber list of a channel
 const getUserChannelSubscribers = asyncHandler(async (req, res) => {
     const {channelId} = req.params
+    if (!channelId) {
+        throw new ApiError(403, "Channel not found");
+    }
+    //counting total subscribers and getting them
+    const totalSubscribers = Subscription.countDocuments({channel: channelId});
+    const subscribers = Subscription.find({channel: channelId})
+                        .populate("user","username email");
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {totalSubscribers, subscribers},
+            "Subscribers data fetched successfully"
+        )
+    )
 })
+
+
 
 // controller to return channel list to which user has subscribed
 const getSubscribedChannels = asyncHandler(async (req, res) => {
     const { subscriberId } = req.params
+    if (!subscriberId) {
+        throw new ApiError(400, "Subscriber not found");
+    }
+    //get number of channels subscribed
+    const totalChannelsSubscribed = await Subscription.countDocuments({subscriber: subscriberId});
+    const subscribedChannels = await Subscription.find({subscriber: subscriberId})
+                                    .populate('channel','username email avatar');
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {totalChannelsSubscribed,subscribedChannels},
+            "Subscribed channel data fetched successfully"
+        )
+    )
+
 })
+
+
 
 export {
     toggleSubscription,

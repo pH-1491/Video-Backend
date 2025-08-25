@@ -39,9 +39,15 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 
     const totalPlaylist = await Playlist.countDocuments({owner: userId});
 
+    const allPlaylist = await Playlist.find({owner: userId}).populate('videos');
+
     return res
     .status(201)
-    .json(new ApiResponse(201,totalPlaylist,"successfully found total playlist."))
+    .json(new ApiResponse(
+        201,
+        {totalPlaylist, allPlaylist},
+        "successfully found total playlist."
+    ))
 })
 
 
