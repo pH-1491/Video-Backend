@@ -57,16 +57,52 @@ const getChannelStats = asyncHandler(async (req, res) => {
             }
         },
         {
-            $count: ""
+            $count: "totalLikes"
         }
     ])
+    const totalLikes = likeStats[0]?.totalLikes || 0;
+
+    return res.status(200).json(
+        new ApiResponse(200, {
+            totalSubscribers,
+            totalVideos,
+            totalViews,
+            totalLikes
+        }, "Channel stats fetched successfully")
+    );
 
 
 })
+
+
 
 const getChannelVideos = asyncHandler(async (req, res) => {
-    // TODO: Get all the videos uploaded by the channel
+
+    const userId = req.user._id;
+    if (!userId) {
+        throw new ApiError(400, "User not found");
+    }
+
+    //count all the videos uploaded by the user
+    const totalVideos = await Video.countDocuments({owner: userId});
+
+    //fetch all the videos uploaded by the user
+    const allVideos = await Video.find({owner: userId}).populate("owner");
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {totalVideos, allVideos},
+                "Videos data fetch successfully."
+            )
+        )
+
+
 })
+
+
 
 export {
     getChannelStats,
