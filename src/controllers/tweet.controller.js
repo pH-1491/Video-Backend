@@ -110,7 +110,7 @@ const updateTweet = asyncHandler(async (req, res) => {
 
 
 const deleteTweet = asyncHandler(async (req, res) => {
-    //TODO: delete tweet
+
     const { tweetId } = req.params;
     if (!tweetId){
         throw new ApiError(403, 'Tweet not found');

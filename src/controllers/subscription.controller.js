@@ -18,7 +18,7 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     }
 
     //check if channel is already subscribed by the user
-    const existingSubscriber = await Subscription.findOne( //fid returns an array not a single document
+    const existingSubscriber = await Subscription.findOne( //find returns an array not a single document
         {
             channel: channelId,
             subscriber: userId,
