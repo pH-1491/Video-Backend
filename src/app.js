@@ -22,13 +22,17 @@ app.use(cookieParser()); //serve se browser ki cookies control krne ke liye
 //routes import
 
 import userRouter from './routes/user.routes.js';
+import videoRouter from './routes/video.route.js';
 
 //routes decleration
 
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/videos', videoRouter);
 
 
 
-
+app.get("/test", (req, res) => {
+    res.json({ message: "Test route working ✅" });
+});
 
 export { app };
