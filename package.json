@@ -2,16 +2,20 @@
   "name": "complete-backend",
   "version": "1.0.0",
   "description": "a complete backend project",
+  "homepage": "https://github.com/pH-1491/Backend_project#readme",
+  "bugs": {
+    "url": "https://github.com/pH-1491/Backend_project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pH-1491/Backend_project.git"
+  },
   "license": "ISC",
   "author": "priye harsh",
   "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10",
-    "prettier": "^3.6.2"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -24,5 +28,9 @@
     "mongoose": "^8.17.0",
     "mongoose-aggregate-paginate-v2": "^1.1.4",
     "multer": "^2.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2"
   }
 }
