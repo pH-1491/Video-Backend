@@ -82,11 +82,11 @@ const publishAVideo = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Description is required")
     }
 
-    if (!req.file?.videoFile) {
+    if (!req.files?.videoFile?.[0]) {
         throw new ApiError(400, "Video file is required");
     }
 
-    if (!req.files?.thumbnail) {
+    if (!req.files?.thumbnail?.[0]) {
         throw new ApiError(400, "Thumbnail is required");
     }
 
