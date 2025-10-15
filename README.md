@@ -1,4 +1,4 @@
-# Video-Backend
+8# Video-Backend
 
 This is the backend service for managing video-related functionality. The repository is public and primarily uses JavaScript.
 
@@ -46,7 +46,6 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## License
 
-No license information is currently provided. Please add a license if you intend others to use or contribute.
 
 ---
 
