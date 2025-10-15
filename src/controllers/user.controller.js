@@ -356,15 +356,17 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
 
 const getUserChannelProfile = asyncHandler(async (req, res) => {
-    const {userName} = req.params; //params is url
-    if (!userName?.trim()) {
+    const {username} = req.params; //params is url
+    //const userName =  username.replace(/\s+/g, "").toLowerCase();
+
+    if (!username?.trim()) {
         throw new ApiError(401, "Invalid user name");
     }
 
     const channel = await User.aggregate([
         {
             $match: {
-                userName: userName?.toLowerCase(),
+                username: { $regex: `^${username.trim()}$`, $options: "i" }
             }
         },
         {
@@ -392,7 +394,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                     $size: "$subscribedTo"
                 },
                 isSubscribed: {
-                    $condition: {
+                    $cond: {
                         if: {$in: [req.user?._id,"$subscribers.subscriber"]},
                         then: true,
                         else: false
