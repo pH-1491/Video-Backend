@@ -49,7 +49,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
     .sort(sortOptions)
         .skip((page - 1) * limit)
         .limit(limit)
-        .populate("user","username email")
+        .populate("owner","username email")
 
     const totalVideos = await Video.countDocuments(filter);
 
