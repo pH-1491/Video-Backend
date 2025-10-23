@@ -335,7 +335,7 @@ const updateUserAvatar = asyncHandler(async (req, res) => {
 
 
 const updateUserCoverImage = asyncHandler(async (req, res) => {
-    const coverImageLocalPath = req.file?.path
+    const coverImageLocalPath = req.file?.path;
 
     if (!coverImageLocalPath) {
         throw new ApiError(400, "Invalid cover image local path");
@@ -343,8 +343,8 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
     const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
-    if (!updateUserCoverImage.url) {
-        throw new ApiError(401, "error while uploading cover image");
+    if (!coverImage.url) {
+        throw new ApiError(401, "Error while uploading cover image");
     }
 
     const user = await User.findByIdAndUpdate(
@@ -352,15 +352,16 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
         {
             $set: {
                 coverImage: coverImage.url,
-            }
+            },
         },
-        {new: true}
-    ).select("-password ");
+        { new: true }
+    ).select("-password");
 
     return res
         .status(200)
-        .json(new ApiResponse(200, user,"User cover image successfully updated"));
-})
+        .json(new ApiResponse(200, user, "User cover image successfully updated"));
+});
+
 
 
 
