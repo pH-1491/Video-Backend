@@ -32,7 +32,7 @@ app.use('/api/v1/videos', videoRouter);
 
 
 app.get("/test", (req, res) => {
-    res.json({ message: "Test route working ✅" });
+    res.json({ message: "Test route working " });
 });
 
 export { app };
