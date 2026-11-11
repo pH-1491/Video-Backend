@@ -1,29 +1,29 @@
 import mongoose from "mongoose"
-import {Comment} from "../models/comment.model.js"
-import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
+import { Comment } from "../models/comment.model.js"
+import { ApiError } from "../utils/ApiError.js"
+import { ApiResponse } from "../utils/ApiResponse.js"
+import { asyncHandler } from "../utils/asyncHandler.js"
 
 
 const getVideoComments = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
     const { page = 1, limit = 10 } = req.query;
     if (!mongoose.Types.ObjectId.isValid(videoId)) {
-        throw new ApiError(400,"Invalid videoId provided");
+        throw new ApiError(400, "Invalid videoId provided");
     }
 
-    const pageNumber = parseInt(page,10);
-    const limitNumber = parseInt(limit,10);
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
     const skip = (pageNumber - 1) * limitNumber;
 
     //fetch comments
-    const comments = await Comment.find({video: videoId})
-        .populate("owner","username email")
-        .sort({ createdAt: -1})
+    const comments = await Comment.find({ video: videoId })
+        .populate("owner", "username email")
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limitNumber);
 
-    const totalComments = await Comment.countDocuments({video: videoId});
+    const totalComments = await Comment.countDocuments({ video: videoId });
 
     return res
         .status(200)
@@ -44,7 +44,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
 const addComment = asyncHandler(async (req, res) => {
     const { videoId } = req.params;
-    const {content} = req.body;
+    const { content } = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(videoId)) {
         throw new ApiError(400, "Invalid video ID");
@@ -61,14 +61,14 @@ const addComment = asyncHandler(async (req, res) => {
     });
 
     return res
-    .status(200)
-    .json(new ApiResponse(201, comment,"Comment added successfully"));
+        .status(200)
+        .json(new ApiResponse(201, comment, "Comment added successfully"));
 })
 
 
 const updateComment = asyncHandler(async (req, res) => {
     const { commentId } = req.params;
-    const {content} = req.body;
+    const { content } = req.body;
 
     if (!content || !content.trim()) {
         throw new ApiError(400, "Comment content is required");
@@ -81,7 +81,7 @@ const updateComment = asyncHandler(async (req, res) => {
     }
 
     //check the ownership of the commment
-    if (comment.user.toString() !== req.user._id.toString()) {
+    if (comment.owner.toString() !== req.user._id.toString()) {
         throw new ApiError(403, "User does not have permission to update");
     }
 
@@ -90,8 +90,8 @@ const updateComment = asyncHandler(async (req, res) => {
     await content.save();
 
     return res
-    .status(200)
-    .json(new ApiResponse(201, comment,"Comment updated successfully"));
+        .status(200)
+        .json(new ApiResponse(201, comment, "Comment updated successfully"));
 
 })
 
@@ -103,13 +103,13 @@ const deleteComment = asyncHandler(async (req, res) => {
     }
 
     //find the comment
-    const comment  = await Comment.findById(commentId);
+    const comment = await Comment.findById(commentId);
     if (!comment) {
         throw new ApiError(404, "Comment not found");
     }
 
     //!ownership check
-    if (comment.user.toString() !== req.user._id.toString()) {
+    if (comment.owner.toString() !== req.user._id.toString()) {
         throw new ApiError(403, "You are not allowed to delete this comment");
     }
 
@@ -119,8 +119,8 @@ const deleteComment = asyncHandler(async (req, res) => {
     await comment.findByIdAndDelete(commentId);
 
     return res
-    .status(200)
-    .json(new ApiResponse(201, comment,"Comment deleted successfully"));
+        .status(200)
+        .json(new ApiResponse(201, comment, "Comment deleted successfully"));
 })
 
 
